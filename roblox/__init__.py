@@ -6,10 +6,11 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from .exceptions import InvalidInformation
+from .exceptions import InvalidInformation, CookieNotFound
 
 import undetected_chromedriver as uc
 import random as rand
+import time
 
 
 class Roblox:
@@ -42,6 +43,21 @@ class Roblox:
 
         return self._driver
 
+    def get_cookie(self, timeout: int = 10) -> str:
+        end_time = time.time() + timeout
+
+        while True:
+            cookie = self.driver.get_cookie('.ROBLOSECURITY')
+            if cookie:
+                return cookie['value']
+
+            if time.time() > end_time:
+                break
+
+            QThread.msleep(500)
+
+        raise CookieNotFound
+
     def sign_up(self, account: Optional[RobloxAccount] = None):
         if account is None:
             account = rand_account()
@@ -53,6 +69,7 @@ class Roblox:
             EC.presence_of_element_located((By.CSS_SELECTOR, 'div[id="signup-container"]'))
         )
         self.driver.execute_script("arguments[0].scrollIntoView(false);", signup_container)
+        QThread.msleep(1500)
 
         birthday_selectors = ['select[id="MonthDropdown"]', 'select[id="DayDropdown"]', 'select[id="YearDropdown"]']
         birthday_values = [account.month, account.day, account.year]

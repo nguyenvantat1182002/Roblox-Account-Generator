@@ -7,6 +7,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from .exceptions import InvalidInformation, CookieNotFound
+from .proxy_changer import ProxyChangerExtension
 
 import undetected_chromedriver as uc
 import random as rand
@@ -23,6 +24,17 @@ class Roblox:
         self.headless = headless
         self._options = uc.ChromeOptions()
         self._driver: Optional[uc.Chrome] = None
+        self.changer: Optional[ProxyChangerExtension] = None
+
+        if proxy is not None:
+            account, address = proxy.split('@')
+            username, password = account.split(':')
+            host, port = address.split(':')
+
+            self.changer = ProxyChangerExtension(host, port, username, password)
+            self.changer.create_extension()
+
+            self._options.add_argument(f'--load-extension={self.changer.plugin_folder_path}')
 
     @property
     def options(self) -> uc.ChromeOptions:
@@ -46,8 +58,12 @@ class Roblox:
     def close(self) -> None:
         self.driver.quit()
 
+        if isinstance(self.changer, ProxyChangerExtension):
+            self.changer.remove()
+
         self._options = None
         self._driver = None
+        self.changer = None
 
     def get_cookie(self, timeout: int = 10) -> str:
         end_time = time.time() + timeout
@@ -101,6 +117,7 @@ class Roblox:
         }
         gender_button = self.driver.find_element(By.CSS_SELECTOR, gender_selectors[account.gender])
         gender_button.click()
+        QThread.msleep(rand.randint(500, 1500))
 
         try:
             sign_up_button = WebDriverWait(self.driver, rand.randint(3, 5)).until(

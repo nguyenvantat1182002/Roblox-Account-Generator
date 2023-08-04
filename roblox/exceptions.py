@@ -1,0 +1,4 @@
+
+
+class InvalidInformation(Exception):
+    pass

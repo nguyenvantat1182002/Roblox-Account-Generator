@@ -43,6 +43,12 @@ class Roblox:
 
         return self._driver
 
+    def close(self) -> None:
+        self.driver.quit()
+
+        self._options = None
+        self._driver = None
+
     def get_cookie(self, timeout: int = 10) -> str:
         end_time = time.time() + timeout
 

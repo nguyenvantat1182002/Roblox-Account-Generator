@@ -3,7 +3,6 @@ from roblox import Roblox
 
 r = Roblox()
 
-account = rand_account()
-r.sign_up(account)
+r.sign_up()
 
 print(account.username, account.password)

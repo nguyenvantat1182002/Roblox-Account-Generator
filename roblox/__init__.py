@@ -61,9 +61,8 @@ class Roblox:
 
         raise CookieNotFound
 
-    def sign_up(self, account: Optional[RobloxAccount] = None):
-        if account is None:
-            account = rand_account()
+    def sign_up(self) -> RobloxAccount:
+        account = rand_account()
 
         self.driver.get('https://www.roblox.com/')
         time.sleep(.5)
@@ -106,6 +105,6 @@ class Roblox:
             )
             sign_up_button.click()
         except TimeoutException:
-            if account is None:
-                raise InvalidInformation
             return self.sign_up()
+
+        return account

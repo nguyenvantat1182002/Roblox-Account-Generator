@@ -1,13 +1,11 @@
 from typing import Optional
 from models import RobloxAccount, rand_account
-from PyQt5.QtCore import QThread
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from .exceptions import InvalidInformation, CookieNotFound
-from browser.proxy_changer import ProxyChangerExtension
 
 import undetected_chromedriver as uc
 import random as rand
@@ -19,22 +17,10 @@ class Roblox:
     BROWSER_WIDTH = 516
     BROWSER_HEIGHT = 653
 
-    def __init__(self, proxy: str = None, headless: bool = False):
-        self.proxy = proxy
+    def __init__(self, headless: bool = False):
         self.headless = headless
         self._options = uc.ChromeOptions()
         self._driver: Optional[uc.Chrome] = None
-        self.changer: Optional[ProxyChangerExtension] = None
-
-        if proxy is not None:
-            account, address = proxy.split('@')
-            username, password = account.split(':')
-            host, port = address.split(':')
-
-            self.changer = ProxyChangerExtension(host, port, username, password)
-            self.changer.create_extension()
-
-            self._options.add_argument(f'--load-extension={self.changer.plugin_folder_path}')
 
     @property
     def options(self) -> uc.ChromeOptions:
@@ -57,13 +43,8 @@ class Roblox:
 
     def close(self) -> None:
         self.driver.quit()
-
-        if isinstance(self.changer, ProxyChangerExtension):
-            self.changer.remove()
-
         self._options = None
         self._driver = None
-        self.changer = None
 
     def get_cookie(self, timeout: int = 10) -> str:
         end_time = time.time() + timeout
@@ -76,7 +57,7 @@ class Roblox:
             if time.time() > end_time:
                 break
 
-            QThread.msleep(500)
+            time.sleep(.5)
 
         raise CookieNotFound
 
@@ -85,13 +66,13 @@ class Roblox:
             account = rand_account()
 
         self.driver.get('https://www.roblox.com/')
-        QThread.msleep(500)
+        time.sleep(.5)
 
         signup_container = WebDriverWait(self.driver, self.TIMEOUT).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, 'div[id="signup-container"]'))
         )
         self.driver.execute_script("arguments[0].scrollIntoView(false);", signup_container)
-        QThread.msleep(1500)
+        time.sleep(1.5)
 
         birthday_selectors = ['select[id="MonthDropdown"]', 'select[id="DayDropdown"]', 'select[id="YearDropdown"]']
         birthday_values = [account.month, account.day, account.year]
@@ -101,15 +82,15 @@ class Roblox:
                 EC.presence_of_element_located((By.CSS_SELECTOR, selector))
             )
             Select(element).select_by_value(str(value))
-            QThread.msleep(rand.randint(500, 1500))
+            time.sleep(rand.uniform(.5, 1.5))
 
         username_input = self.driver.find_element(By.CSS_SELECTOR, 'input[id="signup-username"]')
         username_input.send_keys(account.username)
-        QThread.msleep(rand.randint(500, 1500))
+        time.sleep(rand.uniform(.5, 1.5))
 
         password_input = self.driver.find_element(By.CSS_SELECTOR, 'input[id="signup-password"]')
         password_input.send_keys(account.password)
-        QThread.msleep(rand.randint(500, 1500))
+        time.sleep(rand.uniform(.5, 1.5))
 
         gender_selectors = {
             1: 'button[id="FemaleButton"]',
@@ -117,7 +98,7 @@ class Roblox:
         }
         gender_button = self.driver.find_element(By.CSS_SELECTOR, gender_selectors[account.gender])
         gender_button.click()
-        QThread.msleep(rand.randint(500, 1500))
+        time.sleep(rand.uniform(.5, 1.5))
 
         try:
             sign_up_button = WebDriverWait(self.driver, rand.randint(3, 5)).until(

@@ -68,7 +68,12 @@ class ProxyChangerExtension:
         return self._plugin_folder_path
 
     def create_extension(self) -> None:
-        folder_path = f'extensions\\proxy_auth_plugin_{secrets.token_hex(8)}'
+        extensions_folder = 'extensions'
+
+        if not os.path.exists(extensions_folder):
+            os.mkdir(extensions_folder)
+
+        folder_path = f'{extensions_folder}\\proxy_auth_plugin_{secrets.token_hex(8)}'
 
         os.mkdir(folder_path)
 
@@ -81,5 +86,6 @@ class ProxyChangerExtension:
         self._plugin_folder_path = f'{os.getcwd()}\\{folder_path}'
 
     def remove(self) -> None:
-        if os.path.exists(self.plugin_folder_path):
-            shutil.rmtree(self.plugin_folder_path)
+        if not os.path.exists(self.plugin_folder_path):
+            return
+        shutil.rmtree(self.plugin_folder_path)

@@ -106,6 +106,6 @@ class Roblox:
             )
             sign_up_button.click()
         except TimeoutException:
-            if isinstance(account, RobloxAccount):
+            if account is None:
                 raise InvalidInformation
             return self.sign_up()

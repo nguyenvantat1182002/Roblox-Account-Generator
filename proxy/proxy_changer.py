@@ -1,3 +1,5 @@
+from typing import Optional
+
 import secrets
 import os
 import shutil
@@ -61,10 +63,11 @@ class ProxyChangerExtension:
         self.port = port.strip()
         self.username = username.strip()
         self.password = password.strip()
-        self._plugin_folder_path = None
+
+        self._plugin_folder_path: Optional[str] = None
 
     @property
-    def plugin_folder_path(self) -> str:
+    def plugin_folder_path(self) -> Optional[str]:
         return self._plugin_folder_path
 
     def create_extension(self) -> None:

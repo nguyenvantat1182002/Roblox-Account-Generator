@@ -1,0 +1,4 @@
+
+
+class CaptchaTimeout(Exception):
+    pass

@@ -61,7 +61,7 @@ class Roblox:
 
         raise CookieNotFound
 
-    def sign_up(self, account: Optional[RobloxAccount] = None):
+    def sign_up(self, account: Optional[RobloxAccount] = None) -> RobloxAccount:
         if account is None:
             account = rand_account()
 
@@ -106,6 +106,8 @@ class Roblox:
             )
             sign_up_button.click()
         except TimeoutException:
-            if account is None:
+            if account is not None:
                 raise InvalidInformation
             return self.sign_up()
+
+        return account

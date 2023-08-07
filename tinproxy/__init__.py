@@ -35,14 +35,10 @@ class TinProxy:
             url=f'{self.BASE_URL}/get-current-proxy',
             params=self.param
         )
-
         data = response.json()
-        nex_request, proxy = self.get_data(data)
+        data = self.get_data(data)
 
-        if len(proxy) < 5:
-            raise ProxyError(data)
-
-        return nex_request, proxy
+        return data
 
     def get_proxy(self) -> str:
         response = self.session.get(

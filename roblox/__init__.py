@@ -5,7 +5,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from .exceptions import InvalidInformation, CookieNotFound
+from .exceptions import CookieNotFound
 
 import undetected_chromedriver as uc
 import random as rand

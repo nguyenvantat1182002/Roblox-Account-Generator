@@ -35,6 +35,7 @@ def worker(quantity: int, tin: TinProxy, lock: threading.Lock) -> None:
         try:
             next_request, proxy = tin.get_current_proxy()
             print('Current proxy:', proxy)
+
             if next_request < 1:
                 proxy = tin.get_proxy()
                 print('New proxy:', proxy)

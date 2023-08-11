@@ -1,5 +1,6 @@
 from . import extension
 from tinproxy import TinProxy, ProxyError
+from typing import Optional
 
 import os
 import shutil
@@ -8,9 +9,17 @@ import time
 
 
 class ChromeProxyGenerator:
-    def __init__(self, proxy_auth: str):
-        self.proxy_auth = proxy_auth
+    def __init__(self, proxy_auth: str = None):
+        self._proxy_auth: Optional[str] = proxy_auth
         self._extension_folder_path = None
+
+    @property
+    def proxy_auth(self) -> Optional[str]:
+        return self._proxy_auth
+
+    @proxy_auth.setter
+    def proxy_auth(self, value: str) -> None:
+        self._proxy_auth = value
 
     @property
     def extension_folder_path(self) -> str:

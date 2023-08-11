@@ -22,13 +22,12 @@ class TinProxy:
             username = authentication['username']
             password = authentication['password']
             next_request = data['next_request']
-            proxy = f'{username}:{password}@{http_ipv4}'
-
-            return next_request, proxy
         except:
-            pass
+            raise CannotFetchProxyDataError(data)
 
-        raise CannotFetchProxyDataError(data)
+        proxy = f'{username}:{password}@{http_ipv4}'
+
+        return next_request, proxy
 
     def get_current_proxy(self) -> tuple:
         response = self.session.get(
@@ -36,9 +35,9 @@ class TinProxy:
             params=self.param
         )
         data = response.json()
-        data = self.get_data(data)
+        next_request, proxy = self.get_data(data)
 
-        return data
+        return next_request, proxy
 
     def get_proxy(self) -> str:
         response = self.session.get(
@@ -48,8 +47,5 @@ class TinProxy:
 
         data = response.json()
         _, proxy = self.get_data(data)
-
-        if len(proxy) < 5:
-            raise ProxyError(data)
 
         return proxy

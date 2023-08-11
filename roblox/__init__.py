@@ -5,7 +5,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from .exceptions import CookieNotFound
+from .exceptions import CookieNotFound, InvalidInformation
 
 import undetected_chromedriver as uc
 import random as rand
@@ -17,34 +17,8 @@ class Roblox:
     BROWSER_WIDTH = 516
     BROWSER_HEIGHT = 653
 
-    def __init__(self, headless: bool = False):
-        self.headless = headless
-        self._options = uc.ChromeOptions()
-        self._driver: Optional[uc.Chrome] = None
-
-    @property
-    def options(self) -> uc.ChromeOptions:
-        return self._options
-
-    @property
-    def driver(self) -> uc.Chrome:
-        if self._driver:
-            return self._driver
-
-        self._driver = uc.Chrome(
-            user_multi_procs=True,
-            headless=self.headless,
-            options=self._options
-        )
-
-        self._driver.set_window_size(self.BROWSER_WIDTH, self.BROWSER_HEIGHT)
-
-        return self._driver
-
-    def close(self) -> None:
-        self.driver.quit()
-        self._options = None
-        self._driver = None
+    def __init__(self, driver: uc.Chrome):
+        self.driver = driver
 
     def get_cookie(self, timeout: int = 10) -> str:
         end_time = time.time() + timeout
@@ -105,6 +79,6 @@ class Roblox:
             )
             sign_up_button.click()
         except TimeoutException:
-            return self.sign_up()
+            raise InvalidInformation
 
         return account

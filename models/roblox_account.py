@@ -68,7 +68,7 @@ def ran_password() -> str:
 def rand_account() -> RobloxAccount:
     month = rand.randint(1, 12)
     day = rand.randint(1, 28)
-    year = rand.randint(2000, 2011)
+    year = rand.randint(1999, 2005)
     username = rand_username()
     password = ran_password()
     gender = rand.randint(1, 2)

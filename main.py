@@ -75,7 +75,7 @@ def worker(quantity: int, tin: TinProxy, lock: threading.Lock, chrome_pos: tuple
             options = uc.ChromeOptions()
             options.add_argument(f'--load-extension={",".join(list_extensions)}')
 
-            driver = uc.Chrome(user_multi_procs=True, options=options, driver_executable_path='chromedriver.exe')
+            driver = uc.Chrome(user_multi_procs=True, options=options)
             r = RobloxCapSolve(driver)
 
         driver.set_window_size(RobloxCapSolve.BROWSER_WIDTH, RobloxCapSolve.BROWSER_HEIGHT)
@@ -103,9 +103,10 @@ def worker(quantity: int, tin: TinProxy, lock: threading.Lock, chrome_pos: tuple
             print('Khong giai duoc captcha, dang thu lai...')
         except (TimeoutException, WebDriverException):
             print('Loi, dang thu lai...')
-
-        driver.quit()
-        chrome_proxy.remove()
+        finally:
+            with lock:
+                driver.quit()
+                chrome_proxy.remove()
 
 
 # load config

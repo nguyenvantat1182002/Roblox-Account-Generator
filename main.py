@@ -105,6 +105,7 @@ def worker(quantity: int, tin: TinProxy, lock: threading.Lock, chrome_pos: tuple
             print('Loi, dang thu lai...')
         finally:
             with lock:
+                driver.close()
                 driver.quit()
                 chrome_proxy.remove()
 
